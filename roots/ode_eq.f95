@@ -5,20 +5,23 @@ program shooting_eq
     
     
     
-    integer(i4), parameter :: n = 1000 ! integer single precision
+    integer(i4), parameter :: n = 1000 
+    character(*), parameter :: method = 'Rk4'
+    logical :: full_sol = .false.
     !integer(i4), parameter :: id_file = 100! integer single precision
     
     
-    !real(dp), parameter :: t_i = 0.0_dp !double precision number
-    real(dp), parameter :: t_f = 10.0_dp !double precision number
-    !real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
+   ! real(dp), parameter :: t_i = 0.0_dp !double precision number
+    !real(dp), parameter :: t_f = 20.0_dp !double precision number
+    real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
+    real(dp), parameter, dimension(2) :: t_span = [0.0_dp, 28.0_dp] !double precision number
     
     !character(*), parameter :: file_name = 'Shooting.dat' ! (*) indefined string length
     !real(dp), parameter :: d_t = (t_f - t_i)/(n -1)
-    
-    call solver(n,  t_f)
+     
+    call solve_ivp(n, t_span ,x_i, method, full_sol)
 
-
+    print*, xf
     !real(dp) :: x(2, n)
     !real(dp) :: xf(2)
     !real(dp), dimension(n) :: t
@@ -58,21 +61,20 @@ program shooting_eq
 contains
 
 
-subroutine solver(n,  t_f)
+subroutine solve_ivp(n, t_span, x0, method, full_otp)
     !implicit none
-    integer(i4), intent(in) :: n
-    real(dp), intent(in):: t_f !double precision number
+    logical, intent(in) :: full_otp
 
-    !integer(i4), parameter :: n = 1000 ! integer single precision
-    integer(i4), parameter :: id_file = 100! integer single precision
+    integer(i4), intent(in) :: n
+    !real(dp), intent(in):: ti, tf 
+
     
+    integer(i4), parameter :: id_file = 100
+    character(*), intent(in) :: method 
+    real(dp), intent(in) :: x0(:),t_span(:)
     
-    real(dp), parameter :: t_i = 0.0_dp !double precision number
-    
-    real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
-    
-    character(*), parameter :: file_name = 'Shooting.dat' ! (*) indefined string length
-    real(dp) :: d_t
+     character(*), parameter :: file_name = 'ivp_sol.dat' ! (*) indefined string length
+    real(dp) :: d_t, tf,ti
     
     
     real(dp) :: x(2, n)
@@ -82,35 +84,53 @@ subroutine solver(n,  t_f)
 
 
     integer(i4) :: i 
+    tf =  t_span(2)
+    ti  = t_span(1)
 
-    d_t = (t_f - t_i)/(n -1)
+    d_t = (tf - ti)/(n -1)
        
+   
 
     !Call subroutine of the initial conditions
-    call set_time_grid(t, t_i, d_t)
-    x(:,1) = x_i
+    call set_time_grid(t, ti, d_t)
+    x(:,1) = x0
 
-    do i = 1 , n - 1
+    if ( method == 'Rk4' ) then
+        do i = 1 , n - 1
+         x(:, i + 1) = RK4_step( x(:, i),t(i), d_t, f) 
+        end do 
 
-        x(:, i + 1) =  Heuns_step( x(:, i),t(i), d_t, f )  !f(x(i), t_i)*d_t + x(i)
+    elseif (method == 'Euler'  ) then
+        do i = 1 , n - 1
+
+         x(:, i + 1) =   euler_step( x(:, i),t(i), d_t, f) 
+         end do 
+    elseif ( method == 'Heuns' ) then
+        do i = 1 , n - 1   
+         x(:, i + 1) =   Heuns_step( x(:, i),t(i), d_t, f) 
+         end do 
+    end if 
+
+    if (full_otp) then
+        print*, 'The full solution will be saved'
+        open(unit = id_file , file = file_name)
+
+        do i = 1,n
+            write(id_file,*) t(i), x(:, i)
+        end do
 
 
-    end do 
+    else
+        print*, 'Only the final steps will be saved'
+        xf = x(:,n)
+        print*, xf
+        
 
-    open(unit = id_file , file = file_name)
-
-    !do i = 1,n
-     !   write(id_file,*) t(i), x(:, i)
-    !end do
-   ! a, b = x(:,n-1)
-    !Get final step of solutions
-    xf = x(:,n)
-
-    print*, xf
+    end if
     
 
     
-end subroutine solver
+end subroutine solve_ivp
 
 subroutine set_time_grid(t, ti ,dt)
     real(dp), intent(out) :: t(:) ! because is gonna change
@@ -143,10 +163,9 @@ subroutine set_time_grid(t, ti ,dt)
 
         ! define function
 
-         ![y0,v0]
+        
         ! dy/dt = v
         !dv/dt-g
-        !y = [-x(1), x(1) - 2* x(2)]
         y = [x(2), -g]
 
 
