@@ -8,20 +8,17 @@ program shooting_eq
     integer(i4), parameter :: n = 1000 
     character(*), parameter :: method = 'Rk4'
     logical :: full_sol = .false.
-    !integer(i4), parameter :: id_file = 100! integer single precision
-    
-    
-   ! real(dp), parameter :: t_i = 0.0_dp !double precision number
-    !real(dp), parameter :: t_f = 20.0_dp !double precision number
+   
     real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
     real(dp), parameter, dimension(2) :: t_span = [0.0_dp, 28.0_dp] !double precision number
+    real(dp), dimension(2) :: x_f  !Stores the final step of the solution
     
     !character(*), parameter :: file_name = 'Shooting.dat' ! (*) indefined string length
     !real(dp), parameter :: d_t = (t_f - t_i)/(n -1)
      
-    call solve_ivp(n, t_span ,x_i, method, full_sol)
+    call solve_ivp(n, t_span ,x_i, method, full_sol, x_f)
 
-    print*, xf
+    print*, x_f
     !real(dp) :: x(2, n)
     !real(dp) :: xf(2)
     !real(dp), dimension(n) :: t
@@ -61,9 +58,10 @@ program shooting_eq
 contains
 
 
-subroutine solve_ivp(n, t_span, x0, method, full_otp)
+subroutine solve_ivp(n, t_span, x0, method, full_otp, xf)
     !implicit none
     logical, intent(in) :: full_otp
+    real(dp), intent(out) :: xf(:)
 
     integer(i4), intent(in) :: n
     !real(dp), intent(in):: ti, tf 
@@ -78,7 +76,7 @@ subroutine solve_ivp(n, t_span, x0, method, full_otp)
     
     
     real(dp) :: x(2, n)
-    real(dp) :: xf(2)
+    !real(dp) :: xf(2)
     real(dp), dimension(n) :: t
 
 
@@ -174,4 +172,3 @@ subroutine set_time_grid(t, ti ,dt)
 
     
 end program  shooting_eq
-
