@@ -1,61 +1,57 @@
 program shooting_eq
     use ode
     use iso_fortran_env, only:  dp => real64, i4 => int32
+    use roots 
     implicit none
     
     
-    
-    integer(i4), parameter :: n = 1000 
-    character(*), parameter :: method = 'Rk4'
-    logical :: full_sol = .false.
+    !integer(i4), parameter :: n = 1000 
+    !character(*), parameter :: method = 'Rk4'
+    !logical :: full_sol = .false.
+
+    !real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
+    !real(dp), parameter, dimension(2) :: t_span = [0.0_dp, 28.0_dp] !double precision number
+    !real(dp), dimension(2) :: x_f 
+
    
+   
+
+    !call solve_ivp(n, t_span ,x_i, method, full_sol, x_f)
     real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
-    real(dp), parameter, dimension(2) :: t_span = [0.0_dp, 28.0_dp] !double precision number
-    real(dp), dimension(2) :: x_f  !Stores the final step of the solution
+    real(dp), dimension(2) :: x_f 
     
-    !character(*), parameter :: file_name = 'Shooting.dat' ! (*) indefined string length
-    !real(dp), parameter :: d_t = (t_f - t_i)/(n -1)
-     
-    call solve_ivp(n, t_span ,x_i, method, full_sol, x_f)
+    call y_final(x_i, x_f)
 
     print*, x_f
-    !real(dp) :: x(2, n)
-    !real(dp) :: xf(2)
-    !real(dp), dimension(n) :: t
+  
 
-
-
-    !integer(i4) :: i 
-
-    
-       
-
-    !Call subroutine of the initial conditions
-    !call set_time_grid(t, t_i, d_t)
-    !x(:,1) = x_i
-
-    !do i = 1 , n - 1
-
-     !   x(:, i + 1) =  Heuns_step( x(:, i),t(i), d_t, f )  !f(x(i), t_i)*d_t + x(i)
-
-
-   ! end do 
-
-    !open(unit = id_file , file = file_name)
-
-    !do i = 1,n
-     !   write(id_file,*) t(i), x(:, i)
-    !end do
-   ! a, b = x(:,n-1)
-    !Get final step of solutions
-    !xf = x(:,n)
-
-    !print*, xf
-    
+        
 
 
 
 contains
+
+
+subroutine y_final(xi,  xf)
+    real(dp),  intent(in) :: xi(2)
+    real(dp), intent(out) :: xf(2)
+
+    integer(i4), parameter :: n = 1000 
+    character(*), parameter :: method = 'Rk4'
+    logical :: full_sol = .false.
+
+    !real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
+    real(dp), parameter, dimension(2) :: t_span = [0.0_dp, 10.0_dp] !double precision number
+   
+    
+
+    call solve_ivp(n, t_span ,xi, method, full_sol, xf)
+
+    
+
+
+    
+end subroutine y_final
 
 
 subroutine solve_ivp(n, t_span, x0, method, full_otp, xf)

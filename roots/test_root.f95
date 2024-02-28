@@ -8,14 +8,12 @@ program roots_test
     
     
     
-    
-
-    
-
     p0 = 1
     p1 = 3.1
-    call secant_method_1(p0,p1,f)
-    
+    p0 = -1
+    p1 = 0
+    !call secant_method_1(p0,p1,f)
+    call secant_method_1(p0,p1,f1)
 
 contains
 
