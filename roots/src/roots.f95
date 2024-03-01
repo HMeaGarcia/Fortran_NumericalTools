@@ -1,31 +1,37 @@
-program roots_test
+module roots
+     !compile before the main program
     use iso_fortran_env, only:  dp => real64, i4 => int32
-    use test_functions
-    use roots 
     implicit none
-    
-    real(dp) ::  p0 ,p1
-    
-    
-    
-    p0 = 1
-    p1 = 3.1
-    p0 = -1
-    p1 = 0
-    !call secant_method_1(p0,p1,f)
-    call secant_method_1(p0,p1,f1)
+   
+    abstract interface
+    function func(x) result(rest)
+
+        use iso_fortran_env, only:  dp => real64
+        implicit none 
+        real(dp), intent(in):: x
+        real(dp) :: rest
+            
+        end function func
+
+    end interface
+
+
 
 contains
 
 
-subroutine secant_method(p0,  p1)
-    !implicit none
-    real(dp) :: delta, p0 ,p1, q0, q1, p
+subroutine secant_method_1(p0,  p1, f, sol)
+    implicit none
+    real(dp), intent(inout) :: p0 ,p1
+    real(dp), intent(out) :: sol
+    real(dp) :: delta, q0, q1, p
     integer(i4) :: i
     integer(i4), parameter :: n = 50
-    real(dp), parameter :: TOL =.00001
+    real(dp), parameter :: TOL =.0000001
     character(*), parameter :: print_answer = 'True'
-    open(unit = 69, file = 'roots.dat')
+    procedure(func) :: f
+
+    open(unit = 69, file = './data/roots.dat')
 
     q0 = f(p0)
     q1 = f(p1)
@@ -57,8 +63,8 @@ subroutine secant_method(p0,  p1)
 
 
     end do 
+    sol = p
     
-end subroutine secant_method
+end subroutine secant_method_1
 
-
-end program roots_test
+end module roots

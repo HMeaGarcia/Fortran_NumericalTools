@@ -11,7 +11,7 @@ This program is used for plot the results from the ODE Fortran Solver
 
 """
 # Import the data
-data = np.loadtxt('shooting.dat', delimiter = None)
+data = np.loadtxt('./data/ivp_sol.dat', delimiter = None)
 
 t = data[:,0]
 y = data[:,1]
@@ -22,8 +22,8 @@ fig, ax = plt.subplots()
 ax.plot(t, y, label = 'y')
 ax.plot(t, v, label = 'v') 
 
-ax.set_xlabel('$x$')
-ax.set_ylabel('$t$')
+ax.set_xlabel('$t$')
+ax.set_ylabel('$y$')
 ax.legend(fontsize=7)
 
 

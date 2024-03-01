@@ -17,19 +17,58 @@ program shooting_eq
    
 
     !call solve_ivp(n, t_span ,x_i, method, full_sol, x_f)
-    real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
-    real(dp), dimension(2) :: x_f 
+    !real(dp), parameter, dimension(2) :: x_i = [0.0_dp, 48.0_dp] !double precision number
+   ! real(dp), dimension(2) :: x_f 
     
-    call y_final(x_i, x_f)
+    !call y_final(x_i, x_f)
 
-    print*, x_f
+    real(dp) :: v0, xf 
+    real(dp) ::  p0 ,p1
+    
+    
+    !!v0 = 49!98.000001907350679    
+    !!xf = yf(v0)
+
+   ! print*, xf
   
+
+    
+    
+    p0 = 889.0_dp
+    p1 = 101.0_dp
+    Write(*,*) "Sol is ", p1
+    call secant_method_1(p0,p1,yf, xf)
+    !print*, p1
+
+    
+
+    Write(*,*) "Sol is ", xf
 
         
 
 
 
 contains
+
+function yf(v0) result(y)
+
+    real(dp) :: y
+    real(dp), intent(in) :: v0
+    integer(i4), parameter :: n = 1000 
+    character(*), parameter :: method = 'Rk4'
+    logical :: full_sol = .false.
+    real(dp) :: x_i(2)
+    real(dp), parameter, dimension(2) :: t_span = [0.0_dp, 10.0_dp]
+    
+    real(dp), dimension(2) :: x_f 
+    x_i(1) = 0.0_dp
+    x_i(2) = v0
+     
+    call solve_ivp(n, t_span ,x_i, method, full_sol, x_f)
+    y = x_f(1)
+
+
+end function  yf 
 
 
 subroutine y_final(xi,  xf)
@@ -87,6 +126,7 @@ subroutine solve_ivp(n, t_span, x0, method, full_otp, xf)
 
     !Call subroutine of the initial conditions
     call set_time_grid(t, ti, d_t)
+
     x(:,1) = x0
 
     if ( method == 'Rk4' ) then
@@ -104,6 +144,12 @@ subroutine solve_ivp(n, t_span, x0, method, full_otp, xf)
          x(:, i + 1) =   Heuns_step( x(:, i),t(i), d_t, f) 
          end do 
     end if 
+    open(unit = id_file , file = file_name)
+
+    !do i = 1,n
+    !    write(id_file,*) t(i), x(:, i)
+    !end do 
+
 
     if (full_otp) then
         print*, 'The full solution will be saved'
@@ -115,7 +161,7 @@ subroutine solve_ivp(n, t_span, x0, method, full_otp, xf)
 
 
     else
-        print*, 'Only the final steps will be saved'
+        print*, 'Only the final steps will be saved and'
         xf = x(:,n)
         print*, xf
         
