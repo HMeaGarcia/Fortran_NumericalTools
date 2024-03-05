@@ -3,8 +3,16 @@ program shooting_eq
     use iso_fortran_env, only:  dp => real64, i4 => int32
     use roots 
     implicit none
-    
-    
+    !*****************************************************************************************
+
+    !*****************************************************************************************
+        !   > Shooting Method
+    !  Find a zero of the function \( F(x) \)  that describes the function of the solutions given an 
+    !  the boundary values: y(a) and y(b) where 
+    !               F(\xi) = y(x; \xi) - y(b)
+    !
+
+
     !integer(i4), parameter :: n = 1000 
     !character(*), parameter :: method = 'Rk4'
     !logical :: full_sol = .false.
@@ -42,7 +50,7 @@ program shooting_eq
 
     
 
-    Write(*,*) "Sol is ", xf
+    !Write(*,*) "Sol is ", xf
 
         
 
@@ -106,7 +114,7 @@ subroutine solve_ivp(n, t_span, x0, method, full_otp, xf)
     character(*), intent(in) :: method 
     real(dp), intent(in) :: x0(:),t_span(:)
     
-     character(*), parameter :: file_name = 'ivp_sol.dat' ! (*) indefined string length
+     character(*), parameter :: file_name = './data/ivp_sol.dat' ! (*) indefined string length
     real(dp) :: d_t, tf,ti
     
     

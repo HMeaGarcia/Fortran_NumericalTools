@@ -52,7 +52,7 @@ subroutine secant_method_1(p0,  p1, f, sol)
             if   (print_answer == 'False') then
                 write(69, * ) p
             end if
-            stop
+            exit
         end if
        
         p0 = p1
